@@ -24,15 +24,3 @@ class PostForm(forms.ModelForm):
                 'null': 'Пожалуйста, введите текст'
             },
         }
-    
-    
-    
-    
-    
-    
-    #def clean_text(self):
-        #text = forms.CharField(widget=forms.Textarea)
-        #if text == None:
-            #raise forms.ValidationError('Нет текста')
-        #return text
-        

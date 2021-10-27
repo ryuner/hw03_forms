@@ -7,6 +7,9 @@ from .forms import PostForm
 from .models import Group, Post
 
 
+User = get_user_model()
+
+
 def index(request):
     post_list = Post.objects.all().order_by('-pub_date')
     paginator = Paginator(post_list, 10)
@@ -34,15 +37,14 @@ def group_posts(request, slug):
 
 
 def profile(request, username):
-    User = get_user_model()
-    user = User.objects.get(username=username)
-    post_list = Post.objects.filter(author=user)
+    author = get_object_or_404(User, username=username)
+    post_list = author.posts.all()
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
-    post_counter = post_list.count
+    post_counter = post_list.count()
     page_obj = paginator.get_page(page_number)
     context = {
-        'user_profile': user,
+        'user_profile': author,
         'page_obj': page_obj,
         'post_counter': post_counter
     }
@@ -52,12 +54,11 @@ def profile(request, username):
 def post_detail(request, post_id):
     template = 'posts/post_detail.html'
     post = get_object_or_404(Post, id=post_id)
-    author_posts_count = Post.objects.filter(author_id=post.author_id).count()
+    author_posts_count = post.author.posts.count()
     text = get_object_or_404(Post, pk=post_id)
-    posts = Post.objects.filter(pk=post_id)
 
     context = {
-        'posts': posts,
+        'post': post,
         'text': text,
         'author_posts_count': author_posts_count
     }
@@ -83,8 +84,12 @@ def post_edit(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if post.author == request.user:
         if request.method == 'POST':
-            PostForm(request.POST, instance=post).save()
-            return redirect('posts:post_detail', post_id=post_id)
+            form = PostForm(request.POST)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.author = request.user
+                post.save()
+                return redirect('posts:post_detail', post_id=post_id)
         form = PostForm(instance=post)
         context = {
             'form': form,

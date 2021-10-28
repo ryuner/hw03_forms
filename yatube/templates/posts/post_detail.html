@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block title %}
-  Пост: {{ text.text|truncatewords:30 }}
+  Пост: {{ post.text|truncatewords:30 }}
 {% endblock %}
 {% block content %}
   <div class="row">
     <aside class="col-12 col-md-3">
       <ul class="list-group list-group-flush">
         <li class="list-group-item">
-          Дата публикации: {{ text.pub_date|date:"d E Y" }} 
+          Дата публикации: {{ post.pub_date|date:"d E Y" }} 
         </li>
         <li class="list-group-item">
           Группа: {{ post.group.title }}
@@ -32,7 +32,7 @@
     </aside>
     <article class="col-12 col-md-9">
       <p>
-        {{ text.text|linebreaksbr }}
+        {{ post.text|linebreaksbr }}
       </p>
       {% if post.author == request.user %}
         <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">

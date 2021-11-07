@@ -22,18 +22,22 @@ class StaticURLTests(TestCase):
         response = self.guest_client.get('/about/author/')
         self.assertEqual(response.status_code, 200)
 
+
 class PostURLTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.post = Post.objects.create(
-            text = 'ТЕСТТекст',
-            pub_date = '29.11.2077',
-            author = User.objects.create(first_name='Чернее', last_name='Куковского'),
+        cls.post=Post.objects.create(
+            text='ТЕСТТекст',
+            pub_date='29.11.2077',
+            author=User.objects.create(
+                first_name='Чернее', 
+                last_name='Куковского'
+                ),
             group = Group.objects.create(
-                slug = 'writers',
-                description = 'ТЕСТОписание',
-                title= 'ТЕСТПисатели',
+                slug='writers',
+                description='ТЕСТОписание',
+                title='ТЕСТПисатели',
             ),
         )
 

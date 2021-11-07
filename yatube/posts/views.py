@@ -16,8 +16,7 @@ def index(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
-        'page_obj': page_obj,
-        'post_list': post_list
+        'page_obj': page_obj
     }
     return render(request, 'posts/index.html', context)
 
@@ -70,22 +69,23 @@ def post_create(request):
         post.author = request.user
         post.save()
         return redirect('posts:profile', username=request.user)
-    form = PostForm()
     return render(request, 'posts/create_post.html', {'form': form})
 
 
 @login_required
 def post_edit(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    if post.author == request.user:
-        if request.method == 'POST':
-            PostForm(request.POST, instance=post).save()
+    post = Post.objects.get(pk=post_id)
+    if request.user != post.author:
+        return redirect('posts:post_detail', post_id=post_id)
+    if request.method == "POST":
+        form = PostForm(request.POST,instance=post)
+        if form.is_valid():
+            post = form.save()
             return redirect('posts:post_detail', post_id=post_id)
-        form = PostForm(instance=post)
-        context = {
-            'form': form,
-            'post_id': post_id,
-            'is_edit': True
-        }
-        return render(request, 'posts/create_post.html', context)
-    return redirect('posts:post_detail', post_id=post_id)
+        return render(request, 'posts/create_post.html',
+                               {'form': form, 'is_edit': True,
+                                'post_id': post_id})
+    form = PostForm(instance=post)
+
+    return render(request, 'posts/create_post.html',
+                           {'form': form, 'is_edit': True, 'post_id': post_id})

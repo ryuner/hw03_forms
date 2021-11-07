@@ -11,13 +11,13 @@ class PostModelTest(TestCase):
         super().setUpClass()
         cls.user = User.objects.create_user(username='auth')
         cls.group = Group.objects.create(
-            title='Тестовая группа',
-            slug='Тестовый слаг',
-            description='Тестовое описание',
+            title='ТЕСТЗаголовок',
+            slug='skip',
+            description='ТЕСТОписание',
         )
         cls.post = Post.objects.create(
             author=cls.user,
-            text='Тестовая группа',
+            text='улитка и бар',
         )
 
     def test_models_have_correct_object_names(self):
@@ -31,5 +31,5 @@ class PostModelTest(TestCase):
         for field, expected_value in field_str.items():
             with self.subTest(field=field):
                 self.assertEqual(
-                    expected_value, str(field)
+                    expected_value, str(field),
                 )
